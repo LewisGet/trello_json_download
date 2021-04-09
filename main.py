@@ -1,5 +1,5 @@
 import requests
-import os, sys, time, json
+import os, sys, time, json, shutil
 
 
 # 每個檔案間隔時間
@@ -23,14 +23,18 @@ with open(json_path, 'r', encoding="utf-8") as json_file:
         if card_id == None or card_id == c['shortLink']:
             print (c['name'])
             path = "%s-%s" % (c['name'], c['id'])
-            os.mkdir(path)
+
+            if not os.path.exists(path):
+                os.mkdir(path)
 
             for a in c['attachments']:
                 print ('\t' + a['name'])
                 print ('\t' + a['url'])
 
+                file_name, file_ext = os.path.splitext(a['name'])
+
                 r = requests.get(a['url'])
-                file_path = os.sep.join([path, a['name']])
+                file_path = os.sep.join([path, "%s-%s%s" % (file_name, a['id'], file_ext)])
 
                 with open(file_path, 'wb') as f:
                     f.write(r.content)
