@@ -16,13 +16,25 @@ try:
 except:
     pass
 
+
+def clear_path_string(value):
+    remove = "\\/:*?\"<>|\'\(\)\&\=\!\@\#\$\%\^&"
+    return_value = []
+
+    for c in value:
+        if c not in remove:
+            return_value.append(c)
+
+    return "".join(return_value)
+
+
 with open(json_path, 'r', encoding="utf-8") as json_file:
     data = json.load(json_file)
 
     for c in data['cards']:
         if card_id == None or card_id == c['shortLink']:
             print (c['name'])
-            path = "%s-%s" % (c['name'], c['id'])
+            path = "%s-%s" % (clear_path_string(c['name']), c['id'])
 
             if not os.path.exists(path):
                 os.mkdir(path)
@@ -34,7 +46,7 @@ with open(json_path, 'r', encoding="utf-8") as json_file:
                 file_name, file_ext = os.path.splitext(a['name'])
 
                 r = requests.get(a['url'])
-                file_path = os.sep.join([path, "%s-%s%s" % (file_name, a['id'], file_ext)])
+                file_path = os.sep.join([path, "%s-%s%s" % (clear_path_string(file_name), a['id'], file_ext)])
 
                 with open(file_path, 'wb') as f:
                     f.write(r.content)
